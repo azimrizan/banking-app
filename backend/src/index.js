@@ -1,43 +1,49 @@
-import express from "express";
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@as-integrations/express5";
-import mongoose from "mongoose";
-import dotenv from 'dotenv'
-import cors from "cors";
+import express from 'express';
+import {ApolloServer} from "@apollo/server";
+import {expressMiddleware} from "@as-integrations/express5";
+import mongoose from "mongoose"
+import dotenv from "dotenv";
+// import cors from "cors";
 
-dotenv.config()
+import { typeDefs, resolvers } from './graphql/schema.js';
+import {authMiddleware} from "./middleware/auth.js"
 
+dotenv.config();
 const app = express();
-
-// Connect to MongoDB
-
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB error:", err));
-
-const typeDefs = `type Query { hello: String }`;
-
-const resolvers = {
-  Query: {
-    hello: () => "Hello Banking App Backend",
-  },
-};
+app.use(express.json());
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+    typeDefs,
+    resolvers,
 });
 
 const startServer = async () => {
-  await server.start();
+    await server.start();
 
-  // Correct path here to match the server log
-  app.use('/graphql', cors(), express.json(), expressMiddleware(server));
+    app.get('/', (req, res) => {
+        res.send('GraphQL Server is running! Visit /graphql for the GraphQL playground.');
+    });
 
-  const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`);
-  });
+
+    app.use(
+        '/graphql',
+        expressMiddleware(server, {
+            context: async({req, res})=>{
+                authMiddleware(req, res, ()=>{});
+                return {user:req.user};
+            },
+        })
+    );
+
+    mongoose.connect(process.env.MONGO_URL)
+    .then(()=>{
+        console.log("MongoDB Connected");
+        const PORT = process.env.PORT || 4000;
+        app.listen(PORT, ()=>{
+            console.log(`Server ready at http://localhost:${PORT}`)
+        });
+    })
+    .catch(err => console.error("MongoDB error:", err));
 };
 
 startServer();
