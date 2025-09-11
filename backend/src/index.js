@@ -8,6 +8,8 @@ import accountRoutes from './routes/accountRoutes.js'
 
 import { typeDefs, resolvers } from './graphql/schema.js';
 import {authMiddleware} from "./middleware/auth.js"
+import loanRoutes from './routes/loanRoutes.js'
+
 
 dotenv.config();
 const app = express();
@@ -26,7 +28,7 @@ const startServer = async () => {
     });
 
     app.use("/api/accounts",accountRoutes)
-
+    app.use("/api/loans",loanRoutes)
 
     app.use(
         '/graphql',
