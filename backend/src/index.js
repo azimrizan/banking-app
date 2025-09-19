@@ -9,11 +9,20 @@ import accountRoutes from './routes/accountRoutes.js'
 import { typeDefs, resolvers } from './graphql/schema.js';
 import {authMiddleware} from "./middleware/auth.js"
 import loanRoutes from './routes/loanRoutes.js'
+import cors from "cors"
 
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+    origin: ['http://localhost:4200', 'http://127.0.0.1:4200'], // Allow Angular dev server
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'apollo-require-preflight']
+}));
+
 
 const server = new ApolloServer({
     typeDefs,
