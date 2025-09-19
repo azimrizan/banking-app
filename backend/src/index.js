@@ -30,7 +30,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ✅ Serve Angular static files from "public/browserfile"
-app.use(express.static(path.join(__dirname, 'public', 'browserfile')));
+app.use(express.static(path.join(__dirname, 'public', 'browserfile', 'index.html')));
 
 // REST routes
 app.use("/api/accounts", accountRoutes);
