@@ -29,8 +29,8 @@ app.use(cors({
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve Angular static files from "public/browserfile"
-app.use(express.static(path.join(__dirname, '../public/browserfile')));
+// ✅ Serve Angular static files from "public/browser"
+app.use(express.static(path.join(__dirname, '../public/browser')));
 
 // REST routes
 app.use("/api/accounts", accountRoutes);
@@ -57,10 +57,10 @@ const startServer = async () => {
     );
 
     // ✅ Catch-all route to serve Angular index.html
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
-    
+    app.get(/.*/, (req, res) => {
+        res.sendFile(path.join(__dirname, '../public/browser', 'index.html'));
+    });
+
     // Connect to MongoDB and start server
     mongoose.connect(process.env.MONGO_URL)
         .then(() => {
@@ -76,3 +76,4 @@ app.get(/.*/, (req, res) => {
 };
 
 startServer();
+
