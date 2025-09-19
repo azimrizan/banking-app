@@ -57,10 +57,10 @@ const startServer = async () => {
     );
 
     // ✅ Catch-all route to serve Angular index.html
-app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/browserfile', 'index.html'));
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
-
+    
     // Connect to MongoDB and start server
     mongoose.connect(process.env.MONGO_URL)
         .then(() => {
